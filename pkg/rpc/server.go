@@ -14,23 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package repository_test
+package rpc
 
-import (
-	"io/ioutil"
-	"testing"
-
-	"github.com/sirupsen/logrus"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-)
-
-func TestRepository(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Header Sync Repository Suite Test")
+type Server interface {
 }
 
-var _ = BeforeSuite(func() {
-	logrus.SetOutput(ioutil.Discard)
-})
+type RpcServer struct {
+}
+
+func NewRpcServer() *RpcServer {
+	return &RpcServer{}
+}
+
+func (rpcs *RpcServer) Serve() error {
+	return nil
+}
