@@ -28,10 +28,10 @@ import (
 
 type GethRpcStorageFetcher struct {
 	statediffPayloadChan chan statediff.Payload
-	streamer             streamer.Streamer
+	streamer             streamer.IStateDiffStreamer
 }
 
-func NewGethRpcStorageFetcher(streamer streamer.Streamer, statediffPayloadChan chan statediff.Payload) GethRpcStorageFetcher {
+func NewGethRpcStorageFetcher(streamer streamer.IStateDiffStreamer, statediffPayloadChan chan statediff.Payload) GethRpcStorageFetcher {
 	return GethRpcStorageFetcher{
 		statediffPayloadChan: statediffPayloadChan,
 		streamer:             streamer,
