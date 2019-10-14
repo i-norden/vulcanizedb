@@ -45,33 +45,27 @@ var executeCmd = &cobra.Command{
 	Use:   "execute",
 	Short: "executes a precomposed transformer initializer plugin",
 	Long: `This command needs a config .toml file of form:
-
 [database]
     name     = "vulcanize_public"
     hostname = "localhost"
     user     = "vulcanize"
     password = "vulcanize"
     port     = 5432
-
 [client]
     ipcPath  = "/Users/user/Library/Ethereum/geth.ipc"
-
 [exporter]
     name     = "exampleTransformerExporter"
-
 Note: If any of the plugin transformer need additional
 configuration variables include them in the .toml file as well
-
 The exporter.name is the name (without extension) of the plugin to be loaded.
 The plugin file needs to be located in the /plugins directory and this command assumes 
 the db migrations remain from when the plugin was composed. Additionally, the plugin 
 must have been composed by the same version of vulcanizedb or else it will not be compatible.
-
 Specify config location when executing the command:
 ./vulcanizedb execute --config=./environments/config_name.toml`,
 	Run: func(cmd *cobra.Command, args []string) {
-		SubCommand = cmd.CalledAs()
-		LogWithCommand = *log.WithField("SubCommand", SubCommand)
+		subCommand = cmd.CalledAs()
+		logWithCommand = *log.WithField("SubCommand", subCommand)
 		execute()
 	},
 }
@@ -83,29 +77,29 @@ func execute() {
 	// Get the plugin path and load the plugin
 	_, pluginPath, err := genConfig.GetPluginPaths()
 	if err != nil {
-		LogWithCommand.Fatal(err)
+		logWithCommand.Fatal(err)
 	}
 
 	fmt.Printf("Executing plugin %s", pluginPath)
-	LogWithCommand.Info("linking plugin ", pluginPath)
+	logWithCommand.Info("linking plugin ", pluginPath)
 	plug, err := plugin.Open(pluginPath)
 	if err != nil {
-		LogWithCommand.Warn("linking plugin failed")
-		LogWithCommand.Fatal(err)
+		logWithCommand.Warn("linking plugin failed")
+		logWithCommand.Fatal(err)
 	}
 
 	// Load the `Exporter` symbol from the plugin
-	LogWithCommand.Info("loading transformers from plugin")
+	logWithCommand.Info("loading transformers from plugin")
 	symExporter, err := plug.Lookup("Exporter")
 	if err != nil {
-		LogWithCommand.Warn("loading Exporter symbol failed")
-		LogWithCommand.Fatal(err)
+		logWithCommand.Warn("loading Exporter symbol failed")
+		logWithCommand.Fatal(err)
 	}
 
 	// Assert that the symbol is of type Exporter
 	exporter, ok := symExporter.(Exporter)
 	if !ok {
-		LogWithCommand.Fatal("plugged-in symbol not of type Exporter")
+		logWithCommand.Fatal("plugged-in symbol not of type Exporter")
 	}
 
 	// Use the Exporters export method to load the EventTransformerInitializer, StorageTransformerInitializer, and ContractTransformerInitializer sets
@@ -122,7 +116,7 @@ func execute() {
 		ew := watcher.NewEventWatcher(&db, blockChain)
 		err = ew.AddTransformers(ethEventInitializers)
 		if err != nil {
-			LogWithCommand.Fatalf("failed to add event transformer initializers to watcher: %s", err.Error())
+			logWithCommand.Fatalf("failed to add event transformer initializers to watcher: %s", err.Error())
 		}
 		wg.Add(1)
 		go watchEthEvents(&ew, &wg)
@@ -173,7 +167,7 @@ type Exporter interface {
 func watchEthEvents(w *watcher.EventWatcher, wg *syn.WaitGroup) {
 	defer wg.Done()
 	// Execute over the EventTransformerInitializer set using the watcher
-	LogWithCommand.Info("executing event transformers")
+	logWithCommand.Info("executing event transformers")
 	var recheck constants.TransformerExecution
 	if recheckHeadersArg {
 		recheck = constants.HeaderRecheck
@@ -182,14 +176,14 @@ func watchEthEvents(w *watcher.EventWatcher, wg *syn.WaitGroup) {
 	}
 	err := w.Execute(recheck)
 	if err != nil {
-		LogWithCommand.Fatalf("error executing event watcher: %s", err.Error())
+		logWithCommand.Fatalf("error executing event watcher: %s", err.Error())
 	}
 }
 
 func watchEthStorage(w watcher.IStorageWatcher, wg *syn.WaitGroup) {
 	defer wg.Done()
 	// Execute over the StorageTransformerInitializer set using the storage watcher
-	LogWithCommand.Info("executing storage transformers")
+	logWithCommand.Info("executing storage transformers")
 	on := viper.GetBool("storageBackFill.on")
 	if on {
 		go backFillStorage(w)
@@ -201,11 +195,11 @@ func backFillStorage(w watcher.IStorageWatcher) {
 	// configure archival rpc client
 	archivalRPCPath := viper.GetString("storageBackFill.rpcPath")
 	if archivalRPCPath == "" {
-		LogWithCommand.Fatal(errors.New("storage backfill is turned on but no rpc path is provided"))
+		logWithCommand.Fatal(errors.New("storage backfill is turned on but no rpc path is provided"))
 	}
 	rawRPCClient, dialErr := rpc.Dial(archivalRPCPath)
 	if dialErr != nil {
-		LogWithCommand.Fatal(dialErr)
+		logWithCommand.Fatal(dialErr)
 	}
 	rpcClient := client.NewRpcClient(rawRPCClient, archivalRPCPath)
 	// find min deployment block
@@ -218,7 +212,7 @@ func backFillStorage(w watcher.IStorageWatcher) {
 func watchEthContract(w *watcher.ContractWatcher, wg *syn.WaitGroup) {
 	defer wg.Done()
 	// Execute over the ContractTransformerInitializer set using the contract watcher
-	LogWithCommand.Info("executing contract_watcher transformers")
+	logWithCommand.Info("executing contract_watcher transformers")
 	ticker := time.NewTicker(pollingInterval)
 	defer ticker.Stop()
 	for range ticker.C {

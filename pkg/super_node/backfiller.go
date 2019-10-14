@@ -46,7 +46,7 @@ type BackFillService struct {
 	// Interface for searching and retrieving CIDs from Postgres index
 	Retriever CIDRetriever
 	// State-diff fetcher; needs to be configured with an archival core.RpcClient
-	StateDiffFetcher fetcher.IStateDiffFetcher
+	StateDiffFetcher fetcher.StateDiffFetcher
 	// Check frequency
 	GapCheckFrequency time.Duration
 }

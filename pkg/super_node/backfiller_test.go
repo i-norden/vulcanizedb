@@ -53,8 +53,8 @@ var _ = Describe("BackFiller", func() {
 					},
 				},
 			}
-			mockFetcher := &mocks2.MockStateDiffFetcher{
-				StateDiffsToReturn: map[uint64]*statediff.Payload{
+			mockFetcher := &mocks2.StateDiffFetcher{
+				PayloadsToReturn: map[uint64]*statediff.Payload{
 					100: &mocks.MockStateDiffPayload,
 					101: &mocks.MockStateDiffPayload,
 				},
@@ -65,12 +65,12 @@ var _ = Describe("BackFiller", func() {
 				Converter:         mockConverter,
 				StateDiffFetcher:  mockFetcher,
 				Retriever:         mockRetriever,
-				GapCheckFrequency: time.Second * 10,
+				GapCheckFrequency: time.Second * 2,
 			}
 			wg := &sync.WaitGroup{}
 			quitChan := make(chan bool, 1)
 			backfiller.FillGaps(wg, quitChan)
-			time.Sleep(time.Second * 15)
+			time.Sleep(time.Second * 3)
 			quitChan <- true
 			Expect(len(mockCidRepo.PassedCIDPayload)).To(Equal(2))
 			Expect(mockCidRepo.PassedCIDPayload[0]).To(Equal(mocks.MockCIDPayload))
@@ -106,8 +106,8 @@ var _ = Describe("BackFiller", func() {
 					},
 				},
 			}
-			mockFetcher := &mocks2.MockStateDiffFetcher{
-				StateDiffsToReturn: map[uint64]*statediff.Payload{
+			mockFetcher := &mocks2.StateDiffFetcher{
+				PayloadsToReturn: map[uint64]*statediff.Payload{
 					100: &mocks.MockStateDiffPayload,
 				},
 			}
@@ -117,12 +117,12 @@ var _ = Describe("BackFiller", func() {
 				Converter:         mockConverter,
 				StateDiffFetcher:  mockFetcher,
 				Retriever:         mockRetriever,
-				GapCheckFrequency: time.Second * 10,
+				GapCheckFrequency: time.Second * 2,
 			}
 			wg := &sync.WaitGroup{}
 			quitChan := make(chan bool, 1)
 			backfiller.FillGaps(wg, quitChan)
-			time.Sleep(time.Second * 15)
+			time.Sleep(time.Second * 3)
 			quitChan <- true
 			Expect(len(mockCidRepo.PassedCIDPayload)).To(Equal(1))
 			Expect(mockCidRepo.PassedCIDPayload[0]).To(Equal(mocks.MockCIDPayload))
@@ -151,8 +151,8 @@ var _ = Describe("BackFiller", func() {
 				FirstBlockNumberToReturn: 3,
 				GapsToRetrieve:           [][2]int64{},
 			}
-			mockFetcher := &mocks2.MockStateDiffFetcher{
-				StateDiffsToReturn: map[uint64]*statediff.Payload{
+			mockFetcher := &mocks2.StateDiffFetcher{
+				PayloadsToReturn: map[uint64]*statediff.Payload{
 					1: &mocks.MockStateDiffPayload,
 					2: &mocks.MockStateDiffPayload,
 				},
@@ -163,12 +163,12 @@ var _ = Describe("BackFiller", func() {
 				Converter:         mockConverter,
 				StateDiffFetcher:  mockFetcher,
 				Retriever:         mockRetriever,
-				GapCheckFrequency: time.Second * 10,
+				GapCheckFrequency: time.Second * 2,
 			}
 			wg := &sync.WaitGroup{}
 			quitChan := make(chan bool, 1)
 			backfiller.FillGaps(wg, quitChan)
-			time.Sleep(time.Second * 15)
+			time.Sleep(time.Second * 3)
 			quitChan <- true
 			Expect(len(mockCidRepo.PassedCIDPayload)).To(Equal(2))
 			Expect(mockCidRepo.PassedCIDPayload[0]).To(Equal(mocks.MockCIDPayload))

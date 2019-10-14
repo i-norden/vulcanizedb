@@ -35,7 +35,7 @@ type StateDiffStreamer struct {
 }
 
 // NewStateDiffStreamer creates a pointer to a new StateDiffStreamer which satisfies the IStateDiffStreamer interface
-func NewStateDiffStreamer(client core.RpcClient) *StateDiffStreamer {
+func NewStateDiffStreamer(client core.RpcClient) IStateDiffStreamer {
 	return &StateDiffStreamer{
 		Client: client,
 	}

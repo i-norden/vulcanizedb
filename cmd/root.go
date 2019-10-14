@@ -47,8 +47,8 @@ var (
 	syncAll              bool
 	endingBlockNumber    int64
 	recheckHeadersArg    bool
-	SubCommand           string
-	LogWithCommand       log.Entry
+	subCommand           string
+	logWithCommand       log.Entry
 	storageDiffsSource   string
 )
 
@@ -165,13 +165,13 @@ func getBlockChain() *geth.BlockChain {
 }
 
 func getClients() (client.RpcClient, *ethclient.Client) {
-	rawRpcClient, err := rpc.Dial(ipc)
+	rawRPCClient, err := rpc.Dial(ipc)
 
 	if err != nil {
-		LogWithCommand.Fatal(err)
+		logWithCommand.Fatal(err)
 	}
-	rpcClient := client.NewRpcClient(rawRpcClient, ipc)
-	ethClient := ethclient.NewClient(rawRpcClient)
+	rpcClient := client.NewRpcClient(rawRPCClient, ipc)
+	ethClient := ethclient.NewClient(rawRPCClient)
 
 	return rpcClient, ethClient
 }
