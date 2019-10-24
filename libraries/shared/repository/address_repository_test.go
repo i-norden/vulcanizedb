@@ -17,8 +17,9 @@
 package repository_test
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"strings"
+
+	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 
 	"github.com/jmoiron/sqlx"
 	. "github.com/onsi/ginkgo"
