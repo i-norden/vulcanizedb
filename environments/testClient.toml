@@ -1,0 +1,7 @@
+[client]
+    ipcPath  = "ws://127.0.0.1:8546"
+
+[superNodeBackFill]
+    on = true
+    rpcPath = "http://127.0.0.1:8545"
+    frequency = 5
